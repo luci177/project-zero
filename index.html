@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131c">
+<title>Project ZERO | Code Helper</title>
+<style>
+:root{color-scheme:dark;--bg:#10131c;--panel:#191e2b;--line:#30394b;--green:#71f5b0;--text:#f3f5fa;--muted:#a5aec0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,sans-serif}
+header,main,footer{max-width:850px;margin:auto;padding:20px}
+header{border-bottom:1px solid var(--line)}
+.logo{color:var(--green);font-size:24px;font-weight:800;letter-spacing:2px}
+.tag{color:var(--muted);font-size:14px}
+h1{font-size:clamp(26px,6vw,42px);margin:28px 0 8px}
+p{line-height:1.6}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}
+label{display:block;font-weight:650;margin:12px 0 8px}
+select,textarea{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);background:#0d1119;color:var(--text);font:15px monospace}
+textarea{min-height:220px;resize:vertical}
+button{border:0;border-radius:9px;padding:12px 16px;background:var(--green);color:#102219;font-weight:750;cursor:pointer;margin:8px 6px 0 0}
+button.secondary{background:#30394b;color:white}
+#results{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
+.muted{color:var(--muted);font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">ZERO<span style="color:white">/</span></div>
+  <div class="tag">FREE OPEN-SOURCE DEVELOPER TOOLKIT</div>
+</header>
+<main>
+  <h1>Understand your code.</h1>
+  <p>Paste a code snippet, run basic checks, and learn what common issues mean. Simple, free, and browser-based.</p>
+
+  <section class="panel">
+    <label for="language">Programming language</label>
+    <select id="language">
+      <option value="javascript">JavaScript</option>
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="python">Python (basic checks only)</option>
+    </select>
+
+    <label for="code">Your code</label>
+    <textarea id="code" spellcheck="false" placeholder="Paste your code here..."></textarea>
+
+    <button id="check">Analyze code</button>
+    <button id="example" class="secondary">Load example</button>
+    <button id="clear" class="secondary">Clear</button>
+  </section>
+
+  <section class="panel" aria-live="polite">
+    <h2>Analysis results</h2>
+    <div id="results">Your results will appear here.</div>
+    <button id="copy" class="secondary">Copy results</button>
+  </section>
+  <p class="muted">Note: These are simple heuristic checks, not a full compiler or AI debugger. Results may miss errors or flag valid code. Avoid pasting secrets or private code.</p>
+</main>
+<footer>Project ZERO · Open source · Built for learners</footer>
+<script>
+const $ = id => document.getElementById(id);
+const examples = {
+  javascript: 'const greeting = "Hello";\nconsole.log(greetng);',
+  html: '<html>\n<body>\n<h1>Hello World\n</body>\n</html>',
+  css: 'body {\n  color: white;\n  background: black;\n',
+  python: 'name = "Alex"\nprint(nam)'
+};
+
+$('example').addEventListener('click', () => {
+  $('code').value = examples[$('language').value];
+  $('results').textContent = 'Example loaded. Tap Analyze code to check it.';
+});
+$('language').addEventListener('change', () => {
+  $('code').value = '';
+  $('results').textContent = 'Language changed. Paste code or load an example.';
+});
+$('clear').addEventListener('click', () => {
+  $('code').value = '';
+  $('results').textContent = 'Your results will appear here.';
+});
+$('check').addEventListener('click', analyze);
+
+function analyze() {
+  const code = $('code').value;
+  const lang = $('language').value;
+  const findings = [];
+
+  if (!code.trim()) {
+    $('results').textContent = 'Please paste some code first.';
+    return;
+  }
+
+  if (lang === 'javascript') {
+    if (/\bconsole\.log\s*\(\s*greetng\s*\)/.test(code) &&
+        !/\b(?:const|let|var)\s+greetng\b/.test(code)) {
+      findings.push('Possible typo: "greetng" may be intended to be "greeting".');
+    }
+    if (/\bvar\s+/.test(code)) {
+      findings.push('Consider let or const instead of var in modern JavaScript.');
+    }
+    if (/\beval\s*\(/.test(code)) {
+      findings.push('Security warning: eval() executes strings as code. Avoid untrusted input.');
+    }
+    if (/\b(?:const|let)\s+\w+\s*=/.test(code) &&
+        !/[;}\n]\s*$/.test(code)) {
+      findings.push('Check whether your final statement needs a semicolon. It is often optional.');
+    }
+    if (/[([{]/.test(code) && !/[)\]}]/.test(code)) {
+      findings.push('Possible unmatched opening bracket. Review your parentheses, braces and brackets.');
+    }
+  } else if (lang === 'html') {
+    if (/<h[1-6]\b[^>]*>(?![\s\S]*<\/h[1-6]\s*>)/i.test(code)) {
+      findings.push('Possible unclosed heading tag. Add its matching closing tag.');
+    }
+    if (/<script\b/i.test(code) && !/<\/script\s*>/i.test(code)) {
+      findings.push('A script element may be missing its closing tag.');
+    }
+    if (!/<!doctype html>/i.test(code)) {
+      findings.push('Consider adding <!DOCTYPE html> at the beginning.');
+    }
+    if (/<img\b(?![^>]*\balt\s*=)/i.test(code)) {
+      findings.push('Accessibility suggestion: provide alt text for images.');
+    }
+  } else if (lang === 'css') {
+    const opens = (code.match(/{/g) || []).length;
+    const closes = (code.match(/}/g) || []).length;
+    if (opens !== closes) {
+      findings.push('Curly brace count does not match. Check that every CSS rule closes with }.');
+    }
+    if (/:/.test(code) && !/;|\}/.test(code)) {
+      findings.push('Check whether your CSS declaration needs a semicolon.');
+    }
+  } else if (lang === 'python') {
+    const opens = (code.match(/[([{]/g) || []).length;
+    const closes = (code.match(/[)\]}]/g) || []).length;
+    if (opens !== closes) {
+      findings.push('Opening and closing bracket counts differ. Review brackets manually.');
+    }
+    if (/\bprint\s*\(\s*nam\s*\)/.test(code) &&
+        !/^\s*nam\s*=/m.test(code)) {
+      findings.push('Possible typo: "nam" may be intended to be "name". Verify the variable.');
+    }
+    if (/\bprint\s+[^(]/.test(code)) {
+      findings.push('If using Python 3, print should normally use parentheses: print("Hello").');
+    }
+  }
+
+  if (findings.length === 0) {
+    findings.push('No issues detected by these basic checks.');
+    findings.push('This does not prove the code is correct. Try running it in a suitable environment.');
+  }
+
+  $('results').textContent =
+    'Language: ' + lang + '\n\n' +
+    findings.map((f, i) => (i + 1) + '. ' + f).join('\n\n');
+}
+
+$('copy').addEventListener('click', async () => {
+  const text = $('results').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('copy').textContent = 'Copied!';
+    setTimeout(() => $('copy').textContent = 'Copy results', 1500);
+  } catch {
+    $('results').textContent += '\n\nClipboard unavailable. Select and copy the text manually.';
+  }
+});
+</script>
+</body>
+</html>
