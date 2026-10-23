@@ -4,36 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10131c">
-<title>Project ZERO | Code Helper</title>
+<meta name="description" content="Project ZERO is a free browser-based code checker for beginners.">
+<title>Project ZERO — Code Analyzer</title>
 <style>
-:root{color-scheme:dark;--bg:#10131c;--panel:#191e2b;--line:#30394b;--green:#71f5b0;--text:#f3f5fa;--muted:#a5aec0}
+:root{color-scheme:dark;--bg:#10131c;--panel:#191e2b;--line:#30394b;--green:#71f5b0;--text:#f3f5fa;--muted:#a5aec0;--danger:#ff8585;--warning:#ffd580;--info:#8fc2ff}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,sans-serif}
 header,main,footer{max-width:850px;margin:auto;padding:20px}
 header{border-bottom:1px solid var(--line)}
-.logo{color:var(--green);font-size:24px;font-weight:800;letter-spacing:2px}
-.tag{color:var(--muted);font-size:14px}
-h1{font-size:clamp(26px,6vw,42px);margin:28px 0 8px}
-p{line-height:1.6}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}
-label{display:block;font-weight:650;margin:12px 0 8px}
-select,textarea{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);background:#0d1119;color:var(--text);font:15px monospace}
-textarea{min-height:220px;resize:vertical}
-button{border:0;border-radius:9px;padding:12px 16px;background:var(--green);color:#102219;font-weight:750;cursor:pointer;margin:8px 6px 0 0}
-button.secondary{background:#30394b;color:white}
-#results{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
+.logo{color:var(--green);font-size:27px;font-weight:850;letter-spacing:3px}
+.tag{color:var(--muted);font-size:13px}
+h1{font-size:clamp(28px,6vw,42px)}h2{font-size:23px}p{line-height:1.65}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:20px 0}
+label{display:block;font-weight:650;margin:14px 0 8px}
+select,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#0d1119;color:var(--text);font:15px monospace}
+.editor{display:flex;border:1px solid var(--line);border-radius:10px;background:#0d1119;overflow:hidden}
+#gutter{margin:0;padding:13px 8px 13px 12px;min-width:3.2em;text-align:right;color:#5d6880;font:14px/22px monospace;overflow:hidden;user-select:none;border-right:1px solid var(--line)}
+.editor textarea{border:0;border-radius:0;min-height:280px;height:280px;resize:vertical;font:14px/22px monospace;white-space:pre;overflow:auto;tab-size:4}
+button{border:0;border-radius:10px;padding:13px 16px;background:var(--green);color:#102219;font-weight:750;cursor:pointer;margin:8px 6px 0 0}
+button.secondary{background:#30394b;color:#fff}
+button:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:3px}
 .muted{color:var(--muted);font-size:13px}
+.status{display:inline-block;border-radius:20px;padding:5px 10px;background:#30394b;font-size:12px;margin-bottom:10px}
+.status.good{color:var(--green)}.status.warn{color:var(--warning)}.status.bad{color:var(--danger)}
+#filters button{padding:7px 12px;margin:0 6px 10px 0;font-size:13px;background:#30394b;color:#fff;border:1px solid var(--line)}
+#filters button[aria-pressed="true"]{background:#0d1119;border-color:currentColor}
+#filters .error{color:var(--danger)}#filters .warning{color:var(--warning)}#filters .info{color:var(--info)}
+#list{list-style:none;margin:0;padding:0}
+#list li{margin:0 0 10px}
+.finding{display:block;width:100%;margin:0;text-align:left;background:#0d1119;color:var(--text);font-weight:400;border:1px solid var(--line);border-left:4px solid var(--line);line-height:1.5}
+.finding.error{border-left-color:var(--danger)}.finding.warning{border-left-color:var(--warning)}.finding.info{border-left-color:var(--info)}
+.ftop{font-size:12px;margin-bottom:4px;color:var(--muted)}
+.badge{font-weight:800;margin-right:8px}
+.error .badge{color:var(--danger)}.warning .badge{color:var(--warning)}.info .badge{color:var(--info)}
+.fix{color:var(--muted);font-size:14px;margin-top:4px}
+.snip{display:block;margin-top:8px;padding:6px 8px;background:#161b27;border-radius:6px;font:13px monospace;color:#cdd5e5;overflow-x:auto;white-space:pre}
+.note{padding:10px 12px;border:1px dashed var(--line);border-radius:10px;margin-bottom:12px;font-size:14px}
 footer{text-align:center;color:var(--muted);font-size:13px}
+a{color:var(--green)}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">ZERO<span style="color:white">/</span></div>
-  <div class="tag">FREE OPEN-SOURCE DEVELOPER TOOLKIT</div>
+  <div class="tag">FREE BROWSER-BASED CODE CHECKER</div>
 </header>
 <main>
   <h1>Understand your code.</h1>
-  <p>Paste a code snippet, run basic checks, and learn what common issues mean. Simple, free, and browser-based.</p>
+  <p>Find common coding mistakes, understand warnings, and learn how to fix them. Free, private and runs entirely in your browser.</p>
 
   <section class="panel">
     <label for="language">Programming language</label>
@@ -41,133 +59,663 @@ footer{text-align:center;color:var(--muted);font-size:13px}
       <option value="javascript">JavaScript</option>
       <option value="html">HTML</option>
       <option value="css">CSS</option>
-      <option value="python">Python (basic checks only)</option>
+      <option value="python">Python</option>
     </select>
-
-    <label for="code">Your code</label>
-    <textarea id="code" spellcheck="false" placeholder="Paste your code here..."></textarea>
-
+    <label for="code">Paste your code</label>
+    <div class="editor">
+      <pre id="gutter" aria-hidden="true">1</pre>
+      <textarea id="code" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Paste your code here..."></textarea>
+    </div>
+    <p class="muted">Tab indents. Press Esc, then Tab, to move focus out. Ctrl/Cmd+Enter analyzes.</p>
     <button id="check">Analyze code</button>
-    <button id="example" class="secondary">Load example</button>
+    <button id="example" class="secondary">Load test example</button>
     <button id="clear" class="secondary">Clear</button>
   </section>
 
-  <section class="panel" aria-live="polite">
+  <section class="panel">
+    <div id="status" class="status" role="status">READY</div>
     <h2>Analysis results</h2>
-    <div id="results">Your results will appear here.</div>
+    <div id="results">
+      <p id="msg">Choose a language, paste your code, and tap Analyze code.</p>
+      <div id="filters"></div>
+      <ul id="list"></ul>
+    </div>
     <button id="copy" class="secondary">Copy results</button>
   </section>
-  <p class="muted">Note: These are simple heuristic checks, not a full compiler or AI debugger. Results may miss errors or flag valid code. Avoid pasting secrets or private code.</p>
+
+  <section class="panel">
+    <h2>How it works</h2>
+    <p>Your code is split into tokens (strings, comments, brackets, names) and checked by language-specific rules. Nothing is sent to a server and no AI API is used.</p>
+    <p class="muted">Checks are heuristic: they catch common mistakes and are not a full compiler, security scanner or AI debugger. Tap a result to jump to its line.</p>
+  </section>
 </main>
-<footer>Project ZERO · Open source · Built for learners</footer>
+<footer>Project ZERO · Built for learners</footer>
+
 <script>
-const $ = id => document.getElementById(id);
-const examples = {
-  javascript: 'const greeting = "Hello";\nconsole.log(greetng);',
-  html: '<html>\n<body>\n<h1>Hello World\n</body>\n</html>',
-  css: 'body {\n  color: white;\n  background: black;\n',
-  python: 'name = "Alex"\nprint(nam)'
-};
-
-$('example').addEventListener('click', () => {
-  $('code').value = examples[$('language').value];
-  $('results').textContent = 'Example loaded. Tap Analyze code to check it.';
-});
-$('language').addEventListener('change', () => {
-  $('code').value = '';
-  $('results').textContent = 'Language changed. Paste code or load an example.';
-});
-$('clear').addEventListener('click', () => {
-  $('code').value = '';
-  $('results').textContent = 'Your results will appear here.';
-});
-$('check').addEventListener('click', analyze);
-
-function analyze() {
-  const code = $('code').value;
-  const lang = $('language').value;
-  const findings = [];
-
-  if (!code.trim()) {
-    $('results').textContent = 'Please paste some code first.';
-    return;
+'use strict';
+/* ================= helpers ================= */
+const lineIndex = c => { const s = [0]; for (let i = 0; i < c.length; i++) if (c[i] === '\n') s.push(i + 1); return s; };
+const lineAt = (s, p) => { let lo = 0, hi = s.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (s[m] <= p) lo = m; else hi = m - 1; } return lo + 1; };
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function closest(word, list) {
+  if (word.length < 3) return null;
+  const max = word.length <= 4 ? 1 : 2, w = word.toLowerCase();
+  let best = null, bd = 99;
+  for (const c of list) {
+    if (c === word || Math.abs(c.length - word.length) > max) continue;
+    const d = c.toLowerCase() === w ? 0.5 : lev(word, c);
+    if (d < bd) { bd = d; best = c; }
   }
+  return bd <= max ? best : null;
+}
+const OPEN = '([{', CLOSE = ')]}';
+const closer = o => CLOSE[OPEN.indexOf(o)];
 
-  if (lang === 'javascript') {
-    if (/\bconsole\.log\s*\(\s*greetng\s*\)/.test(code) &&
-        !/\b(?:const|let|var)\s+greetng\b/.test(code)) {
-      findings.push('Possible typo: "greetng" may be intended to be "greeting".');
+/* ================= JavaScript ================= */
+const JS_KW = new Set(('break continue case catch class const debugger default delete do else export extends finally for function if import in instanceof let new return super switch this throw try typeof var void while with yield await null true false undefined NaN Infinity of get set static async from as arguments enum').split(' '));
+const CTRL = new Set(['if', 'for', 'while', 'switch', 'with']);
+const REGEX_BEFORE = new Set(['return', 'typeof', 'case', 'delete', 'void', 'throw', 'in', 'of', 'new', 'else', 'do', 'yield', 'await']);
+const CONT = new Set([',', '=', '+', '-', '*', '/', '?', ':', '&&', '||', '??', '(', '[', '{', '.', '?.', '=>', '+=', '-=', '|', '&', '<', '>', '===', '==', '!==', '!=']);
+const GLOBALS = new Set(('console Math Date JSON Object Array String Number Boolean Promise Set Map WeakMap WeakSet Symbol BigInt Error TypeError RangeError SyntaxError ReferenceError RegExp Intl parseInt parseFloat isNaN isFinite setTimeout clearTimeout setInterval clearInterval requestAnimationFrame cancelAnimationFrame fetch window document navigator location history localStorage sessionStorage globalThis self alert confirm prompt URL URLSearchParams FormData Event CustomEvent HTMLElement Node performance crypto atob btoa structuredClone queueMicrotask Image Audio Blob File FileReader AbortController Headers Request Response WebSocket MutationObserver IntersectionObserver ResizeObserver indexedDB getComputedStyle matchMedia innerWidth innerHeight scrollTo require module exports process Buffer __dirname __filename TextEncoder TextDecoder encodeURIComponent decodeURIComponent encodeURI decodeURI Reflect Proxy Uint8Array Int8Array Uint16Array Int32Array Float32Array Float64Array ArrayBuffer DataView Function Worker XMLHttpRequest screen devicePixelRatio top parent frames Element Document Audio').split(' '));
+const METHODS = ('filter map forEach find findIndex findLast reduce reduceRight some every includes indexOf lastIndexOf slice splice push pop shift unshift concat join reverse sort flat flatMap fill keys values entries at split trim trimStart trimEnd replace replaceAll match matchAll padStart padEnd startsWith endsWith charAt charCodeAt substring toUpperCase toLowerCase toFixed toString then catch finally addEventListener removeEventListener querySelector querySelectorAll getElementById appendChild removeChild createElement setAttribute getAttribute stringify parse preventDefault stopPropagation hasOwnProperty assign freeze from isArray').split(' ');
+const PROPS = ['length', 'innerHTML', 'textContent', 'className', 'classList', 'children', 'parentNode', 'nextSibling', 'style', 'value', 'checked', 'disabled', 'innerText', 'dataset', 'target', 'prototype'];
+
+function tokenizeJS(code, add, L) {
+  const t = [], n = code.length, braces = [];
+  let i = 0;
+  const push = (type, value, start, end) => t.push({ type, value, start, end });
+  function readTemplate(from) {
+    let j = from;
+    while (j < n) {
+      const c = code[j];
+      if (c === '\\') { j += 2; continue; }
+      if (c === '`') { push('str', '`', from, j + 1); return j + 1; }
+      if (c === '$' && code[j + 1] === '{') { push('str', '`', from, j + 2); braces.push('t'); return j + 2; }
+      j++;
     }
-    if (/\bvar\s+/.test(code)) {
-      findings.push('Consider let or const instead of var in modern JavaScript.');
-    }
-    if (/\beval\s*\(/.test(code)) {
-      findings.push('Security warning: eval() executes strings as code. Avoid untrusted input.');
-    }
-    if (/\b(?:const|let)\s+\w+\s*=/.test(code) &&
-        !/[;}\n]\s*$/.test(code)) {
-      findings.push('Check whether your final statement needs a semicolon. It is often optional.');
-    }
-    if (/[([{]/.test(code) && !/[)\]}]/.test(code)) {
-      findings.push('Possible unmatched opening bracket. Review your parentheses, braces and brackets.');
-    }
-  } else if (lang === 'html') {
-    if (/<h[1-6]\b[^>]*>(?![\s\S]*<\/h[1-6]\s*>)/i.test(code)) {
-      findings.push('Possible unclosed heading tag. Add its matching closing tag.');
-    }
-    if (/<script\b/i.test(code) && !/<\/script\s*>/i.test(code)) {
-      findings.push('A script element may be missing its closing tag.');
-    }
-    if (!/<!doctype html>/i.test(code)) {
-      findings.push('Consider adding <!DOCTYPE html> at the beginning.');
-    }
-    if (/<img\b(?![^>]*\balt\s*=)/i.test(code)) {
-      findings.push('Accessibility suggestion: provide alt text for images.');
-    }
-  } else if (lang === 'css') {
-    const opens = (code.match(/{/g) || []).length;
-    const closes = (code.match(/}/g) || []).length;
-    if (opens !== closes) {
-      findings.push('Curly brace count does not match. Check that every CSS rule closes with }.');
-    }
-    if (/:/.test(code) && !/;|\}/.test(code)) {
-      findings.push('Check whether your CSS declaration needs a semicolon.');
-    }
-  } else if (lang === 'python') {
-    const opens = (code.match(/[([{]/g) || []).length;
-    const closes = (code.match(/[)\]}]/g) || []).length;
-    if (opens !== closes) {
-      findings.push('Opening and closing bracket counts differ. Review brackets manually.');
-    }
-    if (/\bprint\s*\(\s*nam\s*\)/.test(code) &&
-        !/^\s*nam\s*=/m.test(code)) {
-      findings.push('Possible typo: "nam" may be intended to be "name". Verify the variable.');
-    }
-    if (/\bprint\s+[^(]/.test(code)) {
-      findings.push('If using Python 3, print should normally use parentheses: print("Hello").');
-    }
+    add(L(from), 'error', 'Template literal is never closed.', 'Add the closing backtick.');
+    return n;
   }
-
-  if (findings.length === 0) {
-    findings.push('No issues detected by these basic checks.');
-    findings.push('This does not prove the code is correct. Try running it in a suitable environment.');
+  while (i < n) {
+    const c = code[i], d = code[i + 1];
+    if (/\s/.test(c)) { i++; continue; }
+    if (c === '/' && d === '/') { while (i < n && code[i] !== '\n') i++; continue; }
+    if (c === '/' && d === '*') {
+      const e = code.indexOf('*/', i + 2);
+      if (e < 0) { add(L(i), 'error', 'Block comment is never closed.', 'Add */ to end the comment.'); i = n; } else i = e + 2;
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      let j = i + 1;
+      while (j < n && code[j] !== c && code[j] !== '\n') { if (code[j] === '\\') j++; j++; }
+      if (code[j] !== c) add(L(i), 'error', 'String is never closed.', 'Add the closing ' + c + ' on the same line.');
+      push('str', c, i, j + 1); i = j + 1; continue;
+    }
+    if (c === '`') { i = readTemplate(i + 1); continue; }
+    if (c === '}' && braces[braces.length - 1] === 't') { braces.pop(); i = readTemplate(i + 1); continue; }
+    if (/[A-Za-z_$]/.test(c)) { let j = i + 1; while (j < n && /[\w$]/.test(code[j])) j++; push('id', code.slice(i, j), i, j); i = j; continue; }
+    if (/\d/.test(c) || (c === '.' && /\d/.test(d || ''))) { let j = i + 1; while (j < n && /[\w.]/.test(code[j])) j++; push('num', code.slice(i, j), i, j); i = j; continue; }
+    if (c === '/') {
+      const p = t[t.length - 1];
+      const div = p && (p.type === 'num' || p.type === 'str' || (p.type === 'id' && !REGEX_BEFORE.has(p.value)) || (p.type === 'p' && [')', ']', '}'].includes(p.value)));
+      if (!div) {
+        let j = i + 1, cls = false;
+        while (j < n && code[j] !== '\n') { const q = code[j]; if (q === '\\') j++; else if (q === '[') cls = true; else if (q === ']') cls = false; else if (q === '/' && !cls) break; j++; }
+        if (code[j] === '/') { j++; while (/[a-z]/i.test(code[j] || '')) j++; push('re', '/', i, j); i = j; continue; }
+      }
+    }
+    const m3 = code.substr(i, 3), m2 = code.substr(i, 2);
+    const p = ['===', '!==', '**=', '...', '<<=', '>>=', '&&=', '||=', '??='].includes(m3) ? m3
+      : ['=>', '==', '!=', '<=', '>=', '&&', '||', '??', '?.', '++', '--', '+=', '-=', '*=', '/=', '**'].includes(m2) ? m2 : c;
+    if (p === '{') braces.push('b'); else if (p === '}') braces.pop();
+    push('p', p, i, i + p.length); i += p.length;
   }
-
-  $('results').textContent =
-    'Language: ' + lang + '\n\n' +
-    findings.map((f, i) => (i + 1) + '. ' + f).join('\n\n');
+  return t;
 }
 
-$('copy').addEventListener('click', async () => {
-  const text = $('results').textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    $('copy').textContent = 'Copied!';
-    setTimeout(() => $('copy').textContent = 'Copy results', 1500);
-  } catch {
-    $('results').textContent += '\n\nClipboard unavailable. Select and copy the text manually.';
+function analyzeJS(code, add0) {
+  let errs = 0;
+  const add = (l, s, m, f) => { if (s === 'error') errs++; add0(l, s, m, f); };
+  const st = lineIndex(code), L = p => lineAt(st, p);
+  const t = tokenizeJS(code, add, L);
+  // bracket matching
+  const pair = new Map(), stk = [];
+  t.forEach((x, k) => {
+    if (x.type !== 'p' || x.value.length !== 1) return;
+    if (OPEN.includes(x.value)) stk.push(k);
+    else if (CLOSE.includes(x.value)) {
+      const o = stk[stk.length - 1];
+      if (o !== undefined && closer(t[o].value) === x.value) { stk.pop(); pair.set(o, k); pair.set(k, o); }
+      else add(L(x.start), 'error', 'Unexpected closing "' + x.value + '".', o !== undefined ? 'The last open bracket was "' + t[o].value + '" on line ' + L(t[o].start) + '.' : 'There is no matching opening bracket.');
+    }
+  });
+  stk.forEach(o => add(L(t[o].start), 'error', '"' + t[o].value + '" is never closed.', 'Add the matching "' + closer(t[o].value) + '".'));
+
+  const isP = (k, v) => t[k] && t[k].type === 'p' && t[k].value === v;
+  const isId = k => t[k] && t[k].type === 'id';
+  const isProp = k => k > 0 && (isP(k - 1, '.') || isP(k - 1, '?.'));
+  const decls = new Map(), keys = new Set();
+  const addDecl = (j, kind) => { const nm = t[j].value; if (!decls.has(nm)) decls.set(nm, []); decls.get(nm).push({ kind, tok: j }); };
+
+  for (let k = 0; k < t.length; k++) {
+    const x = t[k];
+    if (x.type === 'p' && x.value === '(' && pair.has(k)) {
+      const close = pair.get(k), after = t[close + 1], prev = t[k - 1];
+      const arrow = after && after.type === 'p' && after.value === '=>';
+      const block = after && after.type === 'p' && after.value === '{' && prev && prev.type === 'id' && !CTRL.has(prev.value);
+      if (arrow || block) {
+        for (let j = k + 1; j < close; j++) if (isId(j) && !JS_KW.has(t[j].value) && !isProp(j)) addDecl(j, 'param');
+        if (block && !['function', 'catch'].includes(prev.value)) keys.add(prev.value);
+      }
+    }
+    if (x.type !== 'id' || isProp(k)) continue;
+    const v = x.value;
+    if (v === 'const' || v === 'let' || v === 'var') {
+      let depth = 0, expect = true, pattern = false;
+      for (let j = k + 1; j < t.length; j++) {
+        const y = t[j];
+        if (depth === 0 && isP(j, ';')) break;
+        if (depth === 0 && !expect && y.type === 'id' && (y.value === 'of' || y.value === 'in')) break;
+        if (depth === 0 && j > k + 1 && L(y.start) > L(t[j - 1].start) && !(t[j - 1].type === 'p' && CONT.has(t[j - 1].value)) && !(y.type === 'p' && CONT.has(y.value))) break;
+        if (y.type === 'p' && y.value.length === 1 && OPEN.includes(y.value)) { if (depth === 0 && expect) { pattern = true; expect = false; } depth++; }
+        else if (y.type === 'p' && y.value.length === 1 && CLOSE.includes(y.value)) { depth--; if (depth < 0) break; if (depth === 0) pattern = false; }
+        else if (y.type === 'id' && !JS_KW.has(y.value) && !isProp(j)) {
+          const key = depth > 0 && isP(j + 1, ':');
+          if (depth === 0 && expect) { addDecl(j, v); expect = false; }
+          else if (depth > 0 && pattern && !key) addDecl(j, v);
+        }
+        if (depth === 0 && isP(j, ',')) expect = true;
+      }
+    } else if (v === 'function' || v === 'class') {
+      let j = k + 1; if (isP(j, '*')) j++;
+      if (isId(j) && !JS_KW.has(t[j].value)) addDecl(j, v);
+    } else if (v === 'import' && !isP(k + 1, '(')) {
+      for (let j = k + 1; j < t.length && t[j].type !== 'str' && !isP(j, ';'); j++) if (isId(j) && !JS_KW.has(t[j].value)) addDecl(j, 'import');
+    } else if (isP(k + 1, '=>') && !JS_KW.has(v)) addDecl(k, 'param');
   }
-});
+  // property / key names the code itself defines
+  t.forEach((x, k) => {
+    if (x.type !== 'id') return;
+    if (isP(k + 1, ':') && (isP(k - 1, '{') || isP(k - 1, ','))) keys.add(x.value);
+    if (isProp(k) && isP(k + 1, '=')) keys.add(x.value);
+  });
+
+  const declToks = new Set(); decls.forEach(a => a.forEach(d => declToks.add(d.tok)));
+  const uses = new Map(), known = [...decls.keys(), ...GLOBALS];
+  t.forEach((x, k) => {
+    if (x.type !== 'id' || JS_KW.has(x.value) || isProp(k) || declToks.has(k)) return;
+    const pv = t[k - 1];
+    const key = isP(k + 1, ':') && (!pv || (pv.type === 'p' && ['{', ',', ';', '}'].includes(pv.value)));
+    const mdef = isP(k + 1, '(') && pair.has(k + 1) && isP(pair.get(k + 1) + 1, '{') && !CTRL.has(x.value);
+    if (key || mdef) return;
+    const nm = x.value;
+    if (!uses.has(nm)) uses.set(nm, []); uses.get(nm).push(k);
+    if (decls.has(nm) || GLOBALS.has(nm) || (pv && pv.value === 'typeof')) return;
+    if (isP(k + 1, '=')) { add(L(x.start), 'warning', '"' + nm + '" is assigned but never declared.', 'Declare it with const or let, otherwise it becomes an accidental global.'); return; }
+    const s = closest(nm, known);
+    add(L(x.start), s ? 'error' : 'warning', '"' + nm + '" is not defined.', s ? 'Did you mean "' + s + '"?' : 'Declare it first, or ignore this if it comes from another file or library.');
+  });
+
+  decls.forEach((arr, nm) => {
+    if (arr.length !== 1 || nm[0] === '_') return;
+    const d = arr[0], u = uses.get(nm) || [];
+    if (d.kind !== 'param' && !u.length) add(L(t[d.tok].start), 'info', '"' + nm + '" is declared but never used.', 'Remove it if you do not need it.');
+    if (d.kind === 'const') u.forEach(k => {
+      const nx = t[k + 1], pv = t[k - 1];
+      if ((nx && nx.type === 'p' && ['=', '+=', '-=', '*=', '/=', '++', '--'].includes(nx.value)) || (pv && pv.type === 'p' && ['++', '--'].includes(pv.value)))
+        add(L(t[k].start), 'error', 'Cannot reassign constant "' + nm + '".', 'Declare it with let if its value needs to change.');
+    });
+  });
+
+  t.forEach((x, k) => {
+    const line = L(x.start);
+    if (x.type === 'id' && !isProp(k)) {
+      if (x.value === 'var') add(line, 'info', 'The var keyword is used.', 'Prefer const, or let if the value changes.');
+      if (x.value === 'debugger') add(line, 'info', 'Debugger statement found.', 'Remove it before publishing.');
+      if (x.value === 'eval' && isP(k + 1, '(')) add(line, 'warning', 'eval() runs a string as code.', 'Avoid it, especially with untrusted input.');
+      if ((x.value === 'if' || x.value === 'while') && isP(k + 1, '(') && pair.has(k + 1)) {
+        let d = 0;
+        for (let j = k + 2; j < pair.get(k + 1); j++) {
+          const y = t[j]; if (y.type !== 'p') continue;
+          if (y.value.length === 1 && OPEN.includes(y.value)) d++; else if (y.value.length === 1 && CLOSE.includes(y.value)) d--;
+          else if (d === 0 && y.value === '=') { add(L(y.start), 'warning', 'Assignment (=) inside a condition.', 'Did you mean === to compare?'); break; }
+        }
+      }
+    }
+    if (x.type === 'p' && (x.value === '==' || x.value === '!=')) {
+      const a = t[k - 1], b = t[k + 1];
+      if (!((a && a.value === 'null') || (b && b.value === 'null'))) add(line, 'info', 'Loose equality (' + x.value + ') converts types.', 'Use ' + x.value + '= unless you need type conversion.');
+    }
+    if (x.type === 'id' && isProp(k) && !keys.has(x.value) && !decls.has(x.value)) {
+      if (isP(k + 1, '(') && !METHODS.includes(x.value)) {
+        const s = closest(x.value, METHODS);
+        if (s) add(line, 'error', 'Unknown method .' + x.value + '().', 'Did you mean .' + s + '()?');
+      } else if (!isP(k + 1, '(') && !PROPS.includes(x.value)) {
+        const s = closest(x.value, PROPS);
+        if (s) add(line, 'warning', 'Unknown property .' + x.value + '.', 'Did you mean .' + s + '?');
+      }
+    }
+  });
+
+  if (!errs && !/^\s*(import|export)\b/m.test(code) && !/\bawait\b/.test(code)) {
+    try { new Function(code); }
+    catch (e) { if (e instanceof SyntaxError) add0(0, 'error', 'Syntax error (browser parser): ' + e.message + '.', 'The parser gives no line number; check the statement it describes.'); }
+  }
+}
+
+/* ================= HTML ================= */
+const VOID = new Set('area base br col embed hr img input link meta param source track wbr'.split(' '));
+const OPT = new Set('p li td th tr thead tbody tfoot dt dd option optgroup colgroup html head body'.split(' '));
+const RAW = new Set(['script', 'style', 'textarea', 'title']);
+const TAGS = new Set('a abbr address area article aside audio b base bdi bdo blockquote body br button canvas caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd label legend li link main map mark menu meta meter nav noscript object ol optgroup option output p param picture pre progress q rp rt ruby s samp script search section select slot small source span strong style sub summary sup svg math table tbody td template textarea tfoot th thead time title tr track u ul var video wbr'.split(' '));
+const DEPRECATED = { font: 'CSS', center: 'CSS text-align', marquee: 'CSS animation', big: 'CSS font-size', strike: '<s> or <del>', tt: '<code>', frame: '<iframe>', acronym: '<abbr>' };
+
+function analyzeHTML(code, add) {
+  const st = lineIndex(code), L = p => lineAt(st, p), n = code.length;
+  const stack = [], ids = new Map(), labelsFor = new Set(), inputs = [];
+  let i = 0, h1 = 0, lastH = 0, doctype = false, sawHtml = false, title = false, viewport = false;
+  const inSvg = () => stack.some(s => s.name === 'svg' || s.name === 'math');
+
+  function checkTag(name, a, pos, sc) {
+    const line = L(pos);
+    if (!TAGS.has(name) && !name.includes('-') && !inSvg()) {
+      const s = closest(name, [...TAGS]);
+      add(line, s ? 'error' : 'warning', 'Unknown tag <' + name + '>.', s ? 'Did you mean <' + s + '>?' : 'Check the spelling.');
+    }
+    if (DEPRECATED[name]) add(line, 'warning', '<' + name + '> is obsolete.', 'Use ' + DEPRECATED[name] + ' instead.');
+    if (sc && !VOID.has(name) && !inSvg() && name !== 'svg') add(line, 'warning', '<' + name + ' /> is not self-closing in HTML.', 'Write <' + name + '></' + name + '>.');
+    if (name === 'html') { sawHtml = true; if (!a.lang) add(line, 'info', '<html> has no lang attribute.', 'Add lang="en" for screen readers and translation.'); }
+    if (name === 'title') title = true;
+    if (name === 'meta' && String(a.name || '').toLowerCase() === 'viewport') viewport = true;
+    if (name === 'img' && !('alt' in a)) add(line, 'warning', '<img> is missing alt text.', 'Add alt="description", or alt="" if it is decorative.');
+    if (name === 'a' && a.target === '_blank' && !/noopener|noreferrer/.test(a.rel || '')) add(line, 'info', 'target="_blank" without rel="noopener".', 'Add rel="noopener noreferrer".');
+    if (/^h[1-6]$/.test(name)) {
+      const lv = +name[1];
+      if (lv === 1 && ++h1 === 2) add(line, 'info', 'More than one <h1> on the page.', 'Most pages use a single <h1>.');
+      if (lastH && lv > lastH + 1) add(line, 'info', 'Heading level jumps from <h' + lastH + '> to <' + name + '>.', 'Keep heading levels in order.');
+      lastH = lv;
+    }
+    if (typeof a.id === 'string') { if (ids.has(a.id)) add(line, 'error', 'Duplicate id "' + a.id + '" (first used on line ' + ids.get(a.id) + ').', 'IDs must be unique.'); else ids.set(a.id, line); }
+    if (name === 'label' && typeof a.for === 'string') labelsFor.add(a.for);
+    if (['input', 'select', 'textarea'].includes(name)) {
+      const ty = String(a.type || '').toLowerCase();
+      if (!['hidden', 'submit', 'button', 'reset', 'image'].includes(ty) && !a['aria-label'] && !a['aria-labelledby'] && !a.title && !stack.some(s => s.name === 'label')) inputs.push({ id: a.id, line, name });
+    }
+    if (!VOID.has(name) && !(sc && inSvg())) stack.push({ name, line });
+  }
+  function closeTag(name, pos) {
+    const line = L(pos);
+    if (VOID.has(name)) { add(line, 'warning', '</' + name + '> is not needed: <' + name + '> has no closing tag.', 'Remove it.'); return; }
+    let k = stack.length - 1;
+    while (k >= 0 && stack[k].name !== name) k--;
+    if (k < 0) { add(line, 'error', 'Unexpected closing tag </' + name + '>.', 'There is no matching opening <' + name + '>.'); return; }
+    for (let q = stack.length - 1; q > k; q--) if (!OPT.has(stack[q].name)) add(stack[q].line, 'error', '<' + stack[q].name + '> is never closed.', 'Add </' + stack[q].name + '> before </' + name + '> on line ' + line + '.');
+    stack.length = k;
+  }
+
+  while (i < n) {
+    const lt = code.indexOf('<', i); if (lt < 0) break; i = lt;
+    if (code.startsWith('<!--', i)) { const e = code.indexOf('-->', i + 4); if (e < 0) { add(L(i), 'error', 'Comment is never closed.', 'Add -->.'); break; } i = e + 3; continue; }
+    if (code.startsWith('<!', i)) { if (/^<!doctype\s+html\s*>/i.test(code.slice(i, i + 30))) doctype = true; const e = code.indexOf('>', i); i = e < 0 ? n : e + 1; continue; }
+    let m = /^<\/([A-Za-z][^\s>\/]*)\s*>/.exec(code.slice(i, i + 80));
+    if (m) { closeTag(m[1].toLowerCase(), i); i += m[0].length; continue; }
+    m = /^<([A-Za-z][^\s>\/]*)/.exec(code.slice(i, i + 80));
+    if (!m) {
+      if (code[i + 1] === '/') add(L(i), 'error', 'Malformed closing tag.', 'Write it as </name>.');
+      else if (/\s/.test(code[i + 1] || ' ')) add(L(i), 'info', 'Stray "<" in text.', 'Write &lt; for a literal less-than sign.');
+      i++; continue;
+    }
+    const name = m[1].toLowerCase(), start = i, a = Object.create(null);
+    let j = i + m[0].length, sc = false, closed = false;
+    while (j < n) {
+      while (j < n && /\s/.test(code[j])) j++;
+      if (code[j] === '>') { closed = true; j++; break; }
+      if (code[j] === '/' && code[j + 1] === '>') { sc = closed = true; j += 2; break; }
+      if (code[j] === '/') { j++; continue; }
+      if (code[j] === '<') break;
+      const am = /^[^\s"'<>\/=]+/.exec(code.slice(j, j + 200));
+      if (!am) { j++; continue; }
+      const an = am[0].toLowerCase(); j += am[0].length;
+      let val = true, k2 = j;
+      while (k2 < n && /\s/.test(code[k2])) k2++;
+      if (code[k2] === '=') {
+        k2++; while (k2 < n && /\s/.test(code[k2])) k2++;
+        const q = code[k2];
+        if (q === '"' || q === "'") {
+          const e = code.indexOf(q, k2 + 1);
+          if (e < 0) { add(L(k2), 'error', 'Attribute value quote is never closed.', 'Add the closing ' + q + '.'); j = n; break; }
+          val = code.slice(k2 + 1, e); j = e + 1;
+        } else { val = /^[^\s>]*/.exec(code.slice(k2, k2 + 500))[0]; j = k2 + val.length; }
+      }
+      if (an in a) add(L(j), 'warning', 'Duplicate attribute "' + an + '" on <' + name + '>.', 'Remove one of them.'); else a[an] = val;
+    }
+    if (!closed) { add(L(start), 'error', '<' + name + '> tag is missing its closing ">".', 'Add > at the end of the tag.'); i = Math.max(j, start + 1); continue; }
+    i = j; checkTag(name, a, start, sc);
+    if (RAW.has(name) && !sc) {
+      const mm = new RegExp('</' + name + '\\s*>', 'i').exec(code.slice(i));
+      if (!mm) { add(L(start), 'error', '<' + name + '> is never closed.', 'Add </' + name + '>.'); stack.pop(); break; }
+      i += mm.index;
+    }
+  }
+  stack.forEach(s => { if (!OPT.has(s.name)) add(s.line, 'error', '<' + s.name + '> is never closed.', 'Add </' + s.name + '>.'); });
+  inputs.forEach(x => { if (!(x.id && labelsFor.has(x.id))) add(x.line, 'info', '<' + x.name + '> has no label.', 'Add a <label for="id"> or aria-label so screen readers can name it.'); });
+  if (sawHtml) {
+    if (!doctype) add(1, 'info', 'Missing <!DOCTYPE html>.', 'Add it as the very first line.');
+    if (!title) add(1, 'info', 'Missing <title>.', 'Add a <title> inside <head>.');
+    if (!viewport) add(1, 'info', 'Missing viewport meta tag.', 'Add <meta name="viewport" content="width=device-width, initial-scale=1">.');
+  }
+}
+
+/* ================= CSS ================= */
+const CSS_PROPS = ('align-content align-items align-self animation animation-delay animation-direction animation-duration animation-fill-mode animation-iteration-count animation-name animation-play-state animation-timing-function appearance aspect-ratio backdrop-filter background background-attachment background-blend-mode background-clip background-color background-image background-origin background-position background-repeat background-size border border-bottom border-bottom-color border-bottom-left-radius border-bottom-right-radius border-bottom-style border-bottom-width border-collapse border-color border-image border-left border-left-color border-left-style border-left-width border-radius border-right border-right-color border-right-style border-right-width border-spacing border-style border-top border-top-color border-top-left-radius border-top-right-radius border-top-style border-top-width border-width bottom box-shadow box-sizing caret-color clip-path color color-scheme column-count column-gap columns contain container container-name container-type content cursor direction display filter flex flex-basis flex-direction flex-flow flex-grow flex-shrink flex-wrap float font font-family font-feature-settings font-kerning font-size font-style font-variant font-weight gap grid grid-area grid-auto-columns grid-auto-flow grid-auto-rows grid-column grid-column-end grid-column-start grid-gap grid-row grid-row-end grid-row-start grid-template grid-template-areas grid-template-columns grid-template-rows height hyphens inset inset-block inset-inline isolation justify-content justify-items justify-self left letter-spacing line-height list-style list-style-position list-style-type margin margin-block margin-bottom margin-inline margin-left margin-right margin-top mask max-height max-width min-height min-width mix-blend-mode object-fit object-position opacity order outline outline-color outline-offset outline-style outline-width overflow overflow-wrap overflow-x overflow-y overscroll-behavior padding padding-block padding-bottom padding-inline padding-left padding-right padding-top place-content place-items place-self pointer-events position quotes resize right rotate row-gap scale scroll-behavior scroll-margin scroll-padding scroll-snap-align scroll-snap-type tab-size table-layout text-align text-decoration text-decoration-color text-decoration-line text-decoration-style text-indent text-overflow text-shadow text-transform text-wrap top touch-action transform transform-origin transform-style transition transition-delay transition-duration transition-property transition-timing-function translate unicode-bidi user-select vertical-align visibility white-space width will-change word-break word-spacing word-wrap writing-mode z-index zoom accent-color').split(' ');
+const CSS_SET = new Set(CSS_PROPS);
+const LEN_PROPS = new Set(['width', 'height', 'margin', 'padding', 'font-size', 'top', 'left', 'right', 'bottom', 'gap', 'border-radius', 'max-width', 'min-width', 'max-height', 'min-height']);
+
+function analyzeCSS(code, add) {
+  const st = lineIndex(code), L = p => lineAt(st, p), n = code.length, stack = [];
+  let buf = '', bs = -1, paren = 0, parenLine = 0, i = 0;
+  const touch = () => { if (stack.length) stack[stack.length - 1].empty = false; };
+  function decl() {
+    const text = buf.trim(), pos = bs; buf = ''; bs = -1;
+    if (!text || text[0] === '@') return;
+    touch();
+    if (!stack.length) { add(L(pos), 'error', 'Declaration outside of any rule.', 'Wrap it in a selector block; an earlier "}" may be extra.'); return; }
+    const m = /^(--[\w-]+|-?[A-Za-z][\w-]*)\s*:\s*([\s\S]*)$/.exec(text);
+    if (!m) { add(L(pos), 'error', 'Expected "property: value;" but found "' + text.slice(0, 40).replace(/\s+/g, ' ') + '".', 'Check for a missing ":" or a missing "{".'); return; }
+    const prop = m[1].toLowerCase(), val = m[2].trim();
+    if (!val) { add(L(pos), 'error', '"' + prop + '" has no value.', 'Add a value after the colon.'); return; }
+    const nl = /\n[ \t]*(-?[A-Za-z][\w-]*)[ \t]*:/.exec(text);
+    if (nl && (CSS_SET.has(nl[1].toLowerCase()) || nl[1][0] === '-')) {
+      const ln = L(pos) + (text.slice(0, nl.index).match(/\n/g) || []).length;
+      add(ln, 'error', 'Probably missing ";" at the end of this line.', 'The next line starts a new declaration ("' + nl[1] + '").');
+    }
+    if (!prop.startsWith('-') && !CSS_SET.has(prop)) { const s = closest(prop, CSS_PROPS); if (s) add(L(pos), 'warning', 'Unknown property "' + prop + '".', 'Did you mean "' + s + '"?'); }
+    if (!/url\(/i.test(val)) for (const h of val.matchAll(/#([0-9a-zA-Z]*)/g)) if (![3, 4, 6, 8].includes(h[1].length) || /[g-zG-Z]/.test(h[1])) add(L(pos), 'warning', 'Invalid hex colour "#' + h[1] + '".', 'Hex colours have 3, 4, 6 or 8 hex digits.');
+    if (LEN_PROPS.has(prop) && val.split(/\s+/).some(w => /^[+-]?(\d*\.)?\d+$/.test(w) && parseFloat(w) !== 0)) add(L(pos), 'warning', 'Number without a unit in "' + prop + '".', 'Add a unit such as px, rem or %.');
+    if ((val.match(/\(/g) || []).length !== (val.match(/\)/g) || []).length) add(L(pos), 'error', 'Unbalanced parentheses in "' + prop + '".', 'Check every ( has a matching ).');
+    const top = stack[stack.length - 1];
+    if (top.props.has(prop) && !prop.startsWith('-')) add(L(pos), 'info', '"' + prop + '" is set more than once in this rule.', 'The last value wins. Fine for fallbacks, otherwise remove one.');
+    top.props.add(prop);
+  }
+  function selector(sel, pos) {
+    if (!sel) { add(L(i), 'error', 'Empty selector before "{".', 'Add a selector such as .card or h1.'); return; }
+    if (sel[0] === '@') return;
+    if (/,\s*$/.test(sel)) add(L(i), 'error', 'Selector ends with a comma.', 'Remove the trailing comma.');
+    if ((sel.match(/\[/g) || []).length !== (sel.match(/\]/g) || []).length) add(L(pos), 'error', 'Unbalanced [ ] in selector.', 'Close the attribute selector with ].');
+    if (/^[-\w]+\s*:[^{]*\n/.test(sel) && CSS_SET.has(sel.split(':')[0].trim())) add(L(pos), 'error', 'A declaration seems to run into the next selector.', 'Add a missing ";" or "}" before this selector.');
+  }
+  while (i < n) {
+    const c = code[i], d = code[i + 1];
+    if (c === '/' && d === '*') { const e = code.indexOf('*/', i + 2); if (e < 0) { add(L(i), 'error', 'Comment is never closed.', 'Add */.'); i = n; break; } i = e + 2; buf += ' '; continue; }
+    if (c === '"' || c === "'") {
+      let j = i + 1; while (j < n && code[j] !== c && code[j] !== '\n') { if (code[j] === '\\') j++; j++; }
+      if (code[j] !== c) add(L(i), 'error', 'String is never closed.', 'Add the closing ' + c + '.');
+      if (bs < 0) bs = i; buf += code.slice(i, j + 1); i = j + 1; continue;
+    }
+    if (c === '(') { if (!paren) parenLine = L(i); paren++; }
+    if (c === ')') paren = Math.max(0, paren - 1);
+    if (!paren && c === '{') { selector(buf.trim(), bs); touch(); stack.push({ line: L(i), props: new Set(), at: buf.trim()[0] === '@', empty: true }); buf = ''; bs = -1; i++; continue; }
+    if (!paren && c === ';') { decl(); i++; continue; }
+    if (!paren && c === '}') {
+      decl();
+      if (!stack.length) add(L(i), 'error', 'Unexpected "}".', 'There is no matching "{"; this brace may be extra.');
+      else { const b = stack.pop(); if (b.empty && !b.at) add(b.line, 'info', 'Empty rule.', 'Add declarations or remove it.'); }
+      i++; continue;
+    }
+    if (bs < 0 && !/\s/.test(c)) bs = i;
+    buf += c; i++;
+  }
+  if (paren) add(parenLine, 'error', '"(" is never closed.', 'Add the matching ")".');
+  if (buf.trim()) decl();
+  stack.forEach(b => add(b.line, 'error', '"{" is never closed.', 'Add a closing "}" for this block.'));
+}
+
+/* ================= Python ================= */
+const PYB = new Set(('False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield self cls match case _ type print len range int str float list dict set tuple bool input open abs min max sum sorted reversed enumerate zip map filter any all round isinstance issubclass hasattr getattr setattr delattr repr id hash iter next super object property staticmethod classmethod callable chr ord bin hex oct pow divmod format vars dir globals locals exec eval compile bytes bytearray frozenset memoryview complex slice Exception BaseException ValueError TypeError KeyError IndexError AttributeError NameError ZeroDivisionError RuntimeError StopIteration ImportError OSError IOError FileNotFoundError NotImplementedError AssertionError KeyboardInterrupt SystemExit Ellipsis NotImplemented __name__ __file__ __doc__ __import__').split(' '));
+const PY_BLOCK = /^(if|elif|else|for|while|def|class|try|except|finally|with|async\s+def|async\s+for|async\s+with)\b/;
+
+function analyzePython(code, add) {
+  const st = lineIndex(code), L = p => lineAt(st, p), n = code.length;
+  // 1. mask strings and comments (same length; newlines inside strings become \u0001)
+  const out = []; let i = 0;
+  while (i < n) {
+    const c = code[i];
+    if (c === '#') { while (i < n && code[i] !== '\n') { out.push(' '); i++; } continue; }
+    const sm = /^([rRbBuUfF]{0,2})('''|"""|'|")/.exec(code.slice(i, i + 5));
+    if (sm && (i === 0 || !/\w/.test(code[i - 1]))) {
+      const q = sm[2], qs = i + sm[1].length, triple = q.length === 3;
+      let j = qs + q.length, ok = false;
+      while (j < n) {
+        if (code[j] === '\\') { j += 2; continue; }
+        if (code.startsWith(q, j)) { ok = true; j += q.length; break; }
+        if (!triple && code[j] === '\n') break;
+        j++;
+      }
+      if (!ok) add(L(i), 'error', (triple ? 'Triple-quoted string' : 'String') + ' is never closed.', 'Add the closing ' + q + '.');
+      const end = Math.min(j, n);
+      for (let k = i; k < end; k++) {
+        const isQ = k < qs + q.length || (ok && k >= end - q.length);
+        out.push(code[k] === '\n' ? (isQ ? '\n' : '\u0001') : isQ ? '"' : ' ');
+      }
+      i = end; continue;
+    }
+    out.push(c); i++;
+  }
+  // 2. logical lines (join bracketed / backslash continuations)
+  const logical = [], bst = []; let acc = null, ln = 1;
+  out.join('').split('\n').forEach(raw => {
+    const cur = ln; ln += 1 + (raw.match(/\u0001/g) || []).length;
+    const txt = raw.replace(/\u0001/g, ' ');
+    if (!acc) { if (!txt.trim()) return; acc = { line: cur, indent: /^[ \t]*/.exec(txt)[0], text: '' }; }
+    for (const c of txt) {
+      if (OPEN.includes(c)) bst.push({ c, line: cur });
+      else if (CLOSE.includes(c)) { const o = bst[bst.length - 1]; if (o && closer(o.c) === c) bst.pop(); else add(cur, 'error', 'Unexpected closing "' + c + '".', 'There is no matching opening bracket.'); }
+    }
+    const cont = /\\\s*$/.test(txt);
+    acc.text += (acc.text ? ' ' : '') + (cont ? txt.replace(/\\\s*$/, '').trim() : txt.trim());
+    if (!bst.length && !cont) { logical.push(acc); acc = null; }
+  });
+  bst.forEach(o => add(o.line, 'error', '"' + o.c + '" is never closed.', 'Add the matching "' + closer(o.c) + '".'));
+  if (acc) logical.push(acc);
+
+  const top = s => { let d = 0, o = ''; for (const c of s) { const op = OPEN.includes(c), cl = CLOSE.includes(c); if (cl) d--; o += (d > 0 || op || cl) ? ' ' : c; if (op) d++; } return o; };
+  const width = s => s.replace(/\t/g, '    ').length;
+  const levels = [0]; let expect = false, hdr = 0;
+
+  logical.forEach(l => {
+    const t = l.text, w = width(l.indent), tp = top(t), cur = levels[levels.length - 1];
+    if (l.indent.includes('\t') && l.indent.includes(' ')) add(l.line, 'warning', 'Mixed tabs and spaces in indentation.', 'Use 4 spaces everywhere.');
+    if (expect) {
+      if (w <= cur) add(l.line, 'error', 'Expected an indented block after line ' + hdr + '.', 'Indent this line (usually 4 spaces).'); else levels.push(w);
+      expect = false;
+    } else if (w > cur) { add(l.line, 'error', 'Unexpected indent.', 'Remove the extra indentation.'); levels.push(w); }
+    else if (w < cur) {
+      while (levels.length > 1 && levels[levels.length - 1] > w) levels.pop();
+      if (levels[levels.length - 1] !== w) { add(l.line, 'error', 'Unindent does not match any outer indentation level.', 'Line this up with an earlier block.'); levels.push(w); }
+    }
+    const hm = PY_BLOCK.exec(t);
+    if (hm) {
+      const kw = hm[1].replace(/\s+/g, ' ');
+      if (/^else\s+if\b/.test(t)) add(l.line, 'error', '"else if" is not valid Python.', 'Use elif.');
+      if (!tp.includes(':')) {
+        add(l.line, 'error', 'Missing ":" at the end of the "' + kw + '" statement.', 'Block statements must end with a colon.');
+        expect = true; hdr = l.line; // avoids a misleading "unexpected indent" on the next line
+      } else if (/:\s*$/.test(tp)) { expect = true; hdr = l.line; }
+      if (/^(if|elif|while)\b/.test(t) && /(?<![=!<>:+\-*\/%&|^@])=(?!=)/.test(tp.slice(hm[1].length))) add(l.line, 'error', 'Assignment (=) inside a condition.', 'Did you mean == to compare?');
+      if (/^(async\s+)?def\b/.test(t) && /=\s*(\[\s*\]|\{\s*\})/.test(t)) add(l.line, 'warning', 'Mutable default argument.', 'Use None as the default and create the list/dict inside the function.');
+      if (/^except\s*:/.test(t)) add(l.line, 'warning', 'Bare "except:" hides every error.', 'Catch a specific exception, e.g. except ValueError:');
+    }
+    if (/^print\s+[^\s(=.,\[)]/.test(t)) add(l.line, 'error', 'Python 2 style print.', 'Use print(...) with parentheses.');
+    if (/[=!]=\s*None\b/.test(tp)) add(l.line, 'info', 'Comparing to None with == or !=.', 'Use "is None" or "is not None".');
+  });
+
+  // 3. undefined names (flow-insensitive, so it never blames order)
+  const defined = new Set(), ids = s => s.match(/(?<![.\w])[A-Za-z_]\w*/g) || [];
+  logical.forEach(l => {
+    const t = l.text, tp = top(t); let m;
+    if ((m = /^(?:async\s+)?def\s+(\w+)\s*\((.*)\)/.exec(t))) { defined.add(m[1]); m[2].split(',').forEach(p => { const x = /^\s*\**\s*(\w+)/.exec(p); if (x) defined.add(x[1]); }); }
+    if ((m = /^class\s+(\w+)/.exec(t))) defined.add(m[1]);
+    for (const x of t.matchAll(/\blambda\b([^:]*):/g)) ids(x[1]).forEach(v => defined.add(v));
+    for (const x of t.matchAll(/\bfor\s+([^:]+?)\s+in\b/g)) ids(x[1]).forEach(v => defined.add(v));
+    for (const x of t.matchAll(/\bas\s+(\w+)/g)) defined.add(x[1]);
+    for (const x of t.matchAll(/(\w+)\s*:=/g)) defined.add(x[1]);
+    if ((m = /^import\s+(.+)/.exec(t))) m[1].split(',').forEach(p => { const q = p.trim().split(/\s+as\s+/); defined.add(q[q.length - 1].split('.')[0].trim()); });
+    if ((m = /^from\s+\S+\s+import\s+(.+)/.exec(t))) m[1].replace(/[()]/g, '').split(',').forEach(p => { const q = p.trim().split(/\s+as\s+/); defined.add(q[q.length - 1].trim()); });
+    if ((m = /^(?:global|nonlocal)\s+(.+)/.exec(t))) ids(m[1]).forEach(v => defined.add(v));
+    if (!PY_BLOCK.test(t) && (m = /^([A-Za-z_]\w*)\s*:\s*[^=]*$/.exec(tp))) defined.add(m[1]);
+    let prev = 0;
+    for (const x of tp.matchAll(/(?<![=!<>:+\-*\/%&|^@])=(?!=)/g)) { ids(t.slice(prev, x.index)).forEach(v => defined.add(v)); prev = x.index + 1; }
+  });
+  const known = () => [...defined, ...PYB];
+  logical.forEach(l => {
+    const t = l.text; if (/^(import|from)\b/.test(t)) return;
+    for (const m of t.matchAll(/(?<![.\w])([A-Za-z_]\w*)(?!\w)/g)) {
+      const nm = m[1]; if (PYB.has(nm) || defined.has(nm)) continue;
+      const before = t.slice(0, m.index); let d = 0;
+      for (const c of before) { if (OPEN.includes(c)) d++; else if (CLOSE.includes(c)) d--; }
+      if (d > 0 && /^\s*=(?!=)/.test(t.slice(m.index + nm.length))) continue; // keyword argument
+      const s = closest(nm, known());
+      add(l.line, s ? 'error' : 'warning', '"' + nm + '" is not defined.', s ? 'Did you mean "' + s + '"?' : 'Define it first, or ignore this if it comes from elsewhere.');
+    }
+  });
+}
+
+/* ================= runner + self-tests ================= */
+const RANK = { error: 0, warning: 1, info: 2 };
+function run(lang, code) {
+  const f = [];
+  const add = (line, severity, message, fix = '') => { if (!f.some(x => x.line === line && x.message === message)) f.push({ line, severity, message, fix }); };
+  ({ javascript: analyzeJS, html: analyzeHTML, css: analyzeCSS, python: analyzePython })[lang](code, add);
+  return f.sort((a, b) => a.line - b.line || RANK[a.severity] - RANK[b.severity]);
+}
+// [language, code, regex the results must match, or null if no errors/warnings are expected]
+const TESTS = [
+  ['javascript', 'const xs = [1, 2];\nconst t = xs.map(x => x * 2);\nconsole.log(`${t.length} items`, "var eval(");\n// var x = (', null],
+  ['javascript', 'const items = [1];\nconsole.log(itms);', /"itms" is not defined[\s\S]*items/],
+  ['javascript', 'const a = 1;\na = 2;\nconsole.log(a);', /Cannot reassign constant "a"/],
+  ['javascript', 'const xs = [];\nxs.filtr(x => x);', /Did you mean \.filter\(\)/],
+  ['javascript', 'function f() {\n  return 1;\n', /"\{" is never closed/],
+  ['javascript', 'const o = { a: 1 };\nconst { a, b: c } = o;\nclass K { run(x) { return x + a + c; } }\nnew K().run(1);', null],
+  ['html', '<!DOCTYPE html>\n<html lang="en"><head><title>t</title><meta name="viewport" content="x"></head>\n<body><h1>Hi</h1><p>One<p>Two<img src="a.png" alt=""></body></html>', null],
+  ['html', '<div>\n<h1>Hello\n<p>text</p>\n</div>', /<h1> is never closed/],
+  ['html', '<img src="a.png">\n<a id="x"></a><b id="x"></b>', /missing alt[\s\S]*Duplicate id/],
+  ['css', 'body {\n  color: red\n  background: blue;\n}', /missing ";"/],
+  ['css', 'a { colr: red; margin: 10; }\n}', /Did you mean "color"[\s\S]*without a unit|Unexpected "\}"/],
+  ['css', '.a { color: red; background: url(data:image/png;base64,AAA); }\n@media (min-width: 600px) { .a { width: 50%; } }', null],
+  ['python', 'name = "Alex"\nif len(name) > 2:\n    print(nam)', /"nam" is not defined[\s\S]*name/],
+  ['python', 'x = 5\nif x == 5\n    print("y")', /Missing ":"/],
+  ['python', 'def f(a, b=1):\n    """doc\n    more"""\n    total = [i * 2 for i in range(a)]\n    return total, b\nprint(f(2, b=3))', null],
+  ['python', 'if True:\nprint("x")', /Expected an indented block/]
+];
+function runTests() {
+  const rows = TESTS.map(([lang, code, expect], k) => {
+    const f = run(lang, code), bad = f.filter(x => x.severity !== 'info');
+    const text = f.map(x => x.message + ' ' + x.fix).join('\n');
+    const pass = expect ? expect.test(text) : bad.length === 0;
+    return { test: k + 1, lang, pass, detail: pass ? '' : text || '(no findings)' };
+  });
+  if (typeof console.table === 'function') console.table(rows);
+  return rows;
+}
+globalThis.__zero = { run, runTests, TESTS };
+
+/* ================= UI ================= */
+if (typeof document !== 'undefined') {
+  const $ = id => document.getElementById(id);
+  const ta = $('code'), gutter = $('gutter');
+  const SAMPLES = {
+    javascript: 'const students = [\n  { name: "Ali", marks: 85 },\n  { name: "Sara", marks: 92 }\n];\nconst passMark = 50;\n\nfunction calculateAverage(list) {\n  let total = 0;\n  for (const s of list) {\n    total += s.marks;\n  }\n  return total / list.length;\n}\n\npassMark = 60;\nconst average = calculateAverage(students);\nconsole.log("Average:", averge);\nconsole.log(students.filtr(s => s.marks > 80));\nif (average = 90) console.log("Top class");',
+    html: '<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n  <h1>Hello World\n  <img src="photo.jpg">\n  <input type="text" id="name">\n  <div id="box"></div><div id="box"></div>\n</body>\n</html>',
+    css: 'body {\n  color: white\n  background: black;\n}\n\n.card {\n  colr: blue;\n  width: 300;\n  background: #12;\n}\n\nh1 {\n  font-size: 24px;\n',
+    python: 'name = "Alex"\nmarks = 90\n\ndef grade(score, history=[]):\n    if score >= 50\n        return "Passed"\n    return "Failed"\n\nif marks = 90:\n    print(nam)\n\nprint "Done"'
+  };
+  let lang = $('language').value, findings = [];
+  const drafts = {}, shown = { error: true, warning: true, info: true };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const setStatus = (text, type = '') => { $('status').textContent = text; $('status').className = 'status ' + type; };
+  const setMsg = text => { $('msg').textContent = text; $('msg').hidden = !text; };
+
+  function updateGutter() {
+    const c = ta.value.split('\n').length;
+    if (updateGutter.n !== c) { updateGutter.n = c; gutter.textContent = Array.from({ length: c }, (_, i) => i + 1).join('\n'); }
+    gutter.scrollTop = ta.scrollTop;
+  }
+  function goTo(line) {
+    if (!line) return;
+    const s = lineIndex(ta.value), a = s[line - 1], b = line < s.length ? s[line] - 1 : ta.value.length;
+    ta.focus(); ta.setSelectionRange(a, b);
+    ta.scrollTop = Math.max(0, (line - 3) * 22); updateGutter();
+  }
+  function guess(code) {
+    if (/^\s*<(!doctype|html|head|body|div|h[1-6]|p|img|a|ul|section)\b/i.test(code)) return 'html';
+    if (/^\s*(def |class \w+.*:|import \w+\s*$|from \w+ import|print\()/m.test(code) && !/[;{]\s*$/m.test(code)) return 'python';
+    if (/[.#@]?[\w-]+[^{};]*\{\s*[-\w]+\s*:[^;{}]+;?/.test(code) && !/\b(function|const|let|var|=>)\b/.test(code)) return 'css';
+    return 'javascript';
+  }
+  const NAMES = { javascript: 'JavaScript', html: 'HTML', css: 'CSS', python: 'Python' };
+
+  function render() {
+    const f = $('filters'); f.textContent = '';
+    ['error', 'warning', 'info'].forEach(sev => {
+      const n = findings.filter(x => x.severity === sev).length; if (!n) return;
+      const b = el('button', sev, n + ' ' + sev + (n > 1 ? 's' : '')); b.type = 'button';
+      b.setAttribute('aria-pressed', String(shown[sev]));
+      b.onclick = () => { shown[sev] = !shown[sev]; render(); };
+      f.append(b);
+    });
+    const list = $('list'); list.textContent = '';
+    const lines = ta.value.split('\n');
+    findings.filter(x => shown[x.severity]).forEach(x => {
+      const li = el('li'), b = el('button', 'finding ' + x.severity); b.type = 'button';
+      const top = el('div', 'ftop'); top.append(el('span', 'badge', x.severity.toUpperCase()), el('span', '', x.line ? 'Line ' + x.line : 'Line unknown'));
+      b.append(top, el('div', '', x.message));
+      if (x.fix) b.append(el('div', 'fix', x.fix));
+      if (x.line && lines[x.line - 1] !== undefined) b.append(el('code', 'snip', lines[x.line - 1].slice(0, 120) || ' '));
+      b.onclick = () => goTo(x.line); li.append(b); list.append(li);
+    });
+  }
+  function analyze() {
+    const code = ta.value; $('list').textContent = ''; $('filters').textContent = '';
+    if (!code.trim()) { findings = []; setStatus('EMPTY INPUT', 'warn'); setMsg('Paste some code first.'); return; }
+    findings = run(lang, code);
+    const g = guess(code); let note = '';
+    if (g !== lang && code.trim().length > 20) note = 'This looks like ' + NAMES[g] + ', but ' + NAMES[lang] + ' is selected. ';
+    const e = findings.filter(x => x.severity === 'error').length, w = findings.filter(x => x.severity === 'warning').length, inf = findings.length - e - w;
+    if (!findings.length) { setStatus('BASIC CHECKS PASSED', 'good'); setMsg(note + 'No issues found by these checks. This does not guarantee the code is correct; a compiler or test run may find more.'); }
+    else { setStatus(e + ' errors · ' + w + ' warnings · ' + inf + ' tips', e ? 'bad' : w ? 'warn' : 'good'); setMsg(note + 'Tap a result to jump to its line. These are heuristic suggestions, not guaranteed diagnoses.'); }
+    render();
+  }
+
+  $('check').onclick = analyze;
+  $('example').onclick = () => { ta.value = SAMPLES[lang]; updateGutter(); setStatus('EXAMPLE LOADED'); setMsg('Example loaded. Tap Analyze code to check it.'); $('list').textContent = ''; $('filters').textContent = ''; };
+  $('clear').onclick = () => { ta.value = ''; drafts[lang] = ''; findings = []; updateGutter(); setStatus('READY'); setMsg('Your results will appear here.'); $('list').textContent = ''; $('filters').textContent = ''; };
+  $('language').onchange = () => {
+    drafts[lang] = ta.value; lang = $('language').value; ta.value = drafts[lang] || '';
+    findings = []; updateGutter(); setStatus('READY'); setMsg('Paste code or load a test example.'); $('list').textContent = ''; $('filters').textContent = '';
+  };
+  $('copy').onclick = async () => {
+    const text = findings.length ? findings.map((f, i) => (i + 1) + '. [' + f.severity.toUpperCase() + '] Line ' + (f.line || '?') + ': ' + f.message + (f.fix ? ' ' + f.fix : '')).join('\n') : $('msg').textContent;
+    try { await navigator.clipboard.writeText(text); $('copy').textContent = 'Copied!'; setTimeout(() => $('copy').textContent = 'Copy results', 1500); }
+    catch { setMsg('Clipboard access unavailable. Select and copy the results manually.'); }
+  };
+  let tabFree = false;
+  ta.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); analyze(); return; }
+    if (e.key === 'Escape') { tabFree = true; return; }
+    if (e.key === 'Tab' && !tabFree && !e.shiftKey) { e.preventDefault(); const sp = lang === 'python' ? '    ' : '  '; ta.setRangeText(sp, ta.selectionStart, ta.selectionEnd, 'end'); updateGutter(); }
+    else if (e.key !== 'Tab' && e.key !== 'Shift') tabFree = false;
+  });
+  ta.addEventListener('input', updateGutter);
+  ta.addEventListener('scroll', () => { gutter.scrollTop = ta.scrollTop; });
+  if (location.hash === '#test') runTests();
+  updateGutter();
+}
 </script>
 </body>
 </html>
